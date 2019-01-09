@@ -1,8 +1,10 @@
+// @flow
 import React, {Component} from 'react';
 import connect from "react-redux/es/connect/connect";
-import {LOAD_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
+import {LOAD_USERS, SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
 import {Icon, Label, Menu, Table} from 'semantic-ui-react'
-
+import {Link} from "react-router-dom";
+import UsersArray from '../data/usersArray'
 
 export class IndexPage extends Component {
 
@@ -12,7 +14,7 @@ export class IndexPage extends Component {
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return nextProps.users !== this.props.users
+        return nextProps !== this.props
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
@@ -30,7 +32,8 @@ export class IndexPage extends Component {
     }
 
     componentDidMount() {
-        this.props.loadUsers();
+        this.props.setUsers(UsersArray);
+        console.log(this.props.users);
         this.setState({
             users: this.props.users
         });
@@ -50,7 +53,6 @@ export class IndexPage extends Component {
     };
 
     render() {
-
         return (
             <>
                 {
@@ -86,7 +88,7 @@ export class IndexPage extends Component {
                                 {
                                     this.state.users.map((user, index) => {
                                         return <Table.Row key={index}>
-                                            <Table.Cell>{user.id}</Table.Cell>
+                                            <Table.Cell><Link stule={{'text-decoration': 'none'}} to={`/user/${user.id}`}>{user.id}</Link></Table.Cell>
                                             <Table.Cell>{user.name}</Table.Cell>
                                             <Table.Cell>{user.username}</Table.Cell>
                                             <Table.Cell>{user.email}</Table.Cell>
@@ -143,9 +145,9 @@ const mapDispatchToProps = dispatch => {
                 type: SORT_ASC, payload
             })
         },
-        loadUsers: () => {
+        setUsers: (payload) => {
             dispatch({
-                type: LOAD_USERS
+                type: SET_USERS, payload
             })
         }
     });

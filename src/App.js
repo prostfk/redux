@@ -11,6 +11,7 @@ import IndexPage from "./components/indexPage";
 import NavBar from "./components/navbar";
 import Notification from './components/notifications'
 import SearchPage from "./components/search";
+import ContactPage from "./components/contactPage";
 
 class App extends Component {
     render() {
@@ -22,12 +23,14 @@ class App extends Component {
                         <Route path={'/*'} component={Notification}/>
                         <Route exact path={'/'} component={IndexPage}/>
                         <Route exact path={'/search'} component={SearchPage}/>
+                        <Route exact path={'/user/:id'} component={ContactPage}/>
                     </>
                 </Router>
             </Provider>
         );
     }
 }
-
-const store = createStore(allReducers);
+/* eslint-disable no-underscore-dangle */
+const store = createStore(allReducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+/* eslint-enable */
 export default App;
