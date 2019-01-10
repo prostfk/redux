@@ -16,6 +16,7 @@ import {
     Menu
 } from 'semantic-ui-react'
 import {NotificationManager} from "react-notifications";
+import {Link} from "react-router-dom";
 
 class SearchPage extends Component {
 
@@ -46,15 +47,16 @@ class SearchPage extends Component {
     };
 
     addParameter = () => {
-        let is = false;
+        let exists = false;
         this.state.searchParams.map((value, index) => {
-            if (value.parameter === this.state.parameter || this.state.parameter.length === 0 || this.state.value.length === 0) {
+            let key = Object.keys(value)[0];
+            if (key === this.state.parameter || this.state.parameter.length === 0 || this.state.value.length === 0) {
                 console.log(value.parameter, this.state.parameter);
                 NotificationManager.warning('Cannot add this param');
-                is = true;
+                exists = true;
             }
         });
-        if (!is) {
+        if (!exists) {
             let obj = {};
             obj[this.state.parameter] = this.state.value;
             this.setState({
@@ -84,50 +86,7 @@ class SearchPage extends Component {
     render() {
         return (
             <Container>
-                <div>
-                    {
-                        this.state.users.length > 0 ?
-                            <div>
-                                <Icon name={'close'} onClick={() => {
-
-                                    this.setState({
-                                        users: []
-                                    });
-                                    document.getElementById('hidden').style.display = 'none';
-                                    document.getElementById('params-table').style.display = '';
-                                }
-                                }/>
-                                <Table celled>
-                                    <Table.Header>
-                                        <Table.Row>
-                                            <Table.HeaderCell>Id
-                                            </Table.HeaderCell>
-                                            <Table.HeaderCell>Name
-                                            </Table.HeaderCell>
-                                            <Table.HeaderCell>Surname
-                                            </Table.HeaderCell>
-                                            <Table.HeaderCell>Email
-                                            </Table.HeaderCell>
-                                        </Table.Row>
-                                    </Table.Header>
-                                    <Table.Body>
-                                        {
-                                            this.state.users.map((user, index) => {
-                                                return <Table.Row key={index}>
-                                                    <Table.Cell>{user.id}</Table.Cell>
-                                                    <Table.Cell>{user.name}</Table.Cell>
-                                                    <Table.Cell>{user.surname}</Table.Cell>
-                                                    <Table.Cell>{user.email}</Table.Cell>
-                                                </Table.Row>
-                                            })
-                                        }
-                                    </Table.Body>
-                                </Table>
-                            </div>
-                            : <div/>
-                    }
-                </div>
-                <div id={'params-table'}>
+                <div id={'params-table'} className={'animated fadeIn'}>
                     <Form>
                         <Form.Field>
                             <label>Value</label>
@@ -138,12 +97,13 @@ class SearchPage extends Component {
                                 id={'parameter'}>
                             <option value="id">id</option>
                             <option value="name">name</option>
-                            <option value="username">username</option>
+                            <option value="surname">surname</option>
                             <option value="email">email</option>
                         </select>
                         <Button type='button' onClick={this.addParameter}>Add field</Button>
-                        <Button type='button'
+                        <Button type='button' style={{display: (this.state.searchParams.length > 0 ? '' : 'none')}}
                                 onClick={this.searchUsers}>Search</Button>
+
                     </Form>
                     {
                         this.state.searchParams.length > 0 ?
@@ -175,7 +135,7 @@ class SearchPage extends Component {
                             </Table> : <div/>
 
                     }
-                    <Button onClick={() => {
+                    <Button style={{display: 'none'}} onClick={() => {
                         document.getElementById('params-table').style.display = 'none';
                         document.getElementById('hidden').style.display = '';
                     }}>Hide params</Button>
@@ -185,6 +145,50 @@ class SearchPage extends Component {
                         document.getElementById('params-table').style.display = '';
                         document.getElementById('hidden').style.display = 'none';
                     }}>Show params</Button>
+                </div>
+
+                <div>
+                    {
+                        this.state.users.length > 0 ?
+                            <div>
+                                <Icon name={'close'} onClick={() => {
+
+                                    this.setState({
+                                        users: []
+                                    });
+                                    document.getElementById('hidden').style.display = 'none';
+                                    document.getElementById('params-table').style.display = '';
+                                }
+                                }/>
+                                <Table celled>
+                                    <Table.Header>
+                                        <Table.Row>
+                                            <Table.HeaderCell>Id
+                                            </Table.HeaderCell>
+                                            <Table.HeaderCell>Name
+                                            </Table.HeaderCell>
+                                            <Table.HeaderCell>Surname
+                                            </Table.HeaderCell>
+                                            <Table.HeaderCell>Email
+                                            </Table.HeaderCell>
+                                        </Table.Row>
+                                    </Table.Header>
+                                    <Table.Body>
+                                        {
+                                            this.state.users.map((user, index) => {
+                                                return <Table.Row className={'animated fadeIn'} key={index}>
+                                                    <Table.Cell><Link style={{'text-decoration': 'none'}} to={`/user/${user.id}`}>{user.id}</Link></Table.Cell>
+                                                    <Table.Cell>{user.name}</Table.Cell>
+                                                    <Table.Cell>{user.surname}</Table.Cell>
+                                                    <Table.Cell>{user.email}</Table.Cell>
+                                                </Table.Row>
+                                            })
+                                        }
+                                    </Table.Body>
+                                </Table>
+                            </div>
+                            : <div/>
+                    }
                 </div>
             </Container>
         );

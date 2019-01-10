@@ -1,63 +1,11 @@
-// @flow
 import React, {Component} from 'react';
-import connect from "react-redux/es/connect/connect";
-import {LOAD_USERS, SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
 import {Button, Icon, Label, Menu, Table} from 'semantic-ui-react'
 import {Link} from "react-router-dom";
-import LoadingBar from "./loadingBar";
+import EditUser from "./indexPage";
 import CreateUser from "./createUser";
-import EditUser from "./editUser";
+import LoadingBar from "./loadingBar";
 
-export class IndexPage extends Component {
-
-    state = {
-        users: [],
-        page: 1
-    };
-
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return nextProps !== this.props
-    }
-
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (nextProps.users !== this.props.users) {
-            this.setState({
-                users: nextProps.users
-            })
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        this.setState({
-            users: this.props.users
-        });
-    }
-
-    loadUsers = (pageNumber = this.state.page) => {
-        fetch(`/api/contacts?page=${pageNumber - 1}`).then(resp=>resp.json()).then(data=>this.props.setUsers(data));
-        this.__getCurrentPage();
-        this.setState({
-            users: this.props.users
-        });
-    };
-
-    componentDidMount() {
-        this.loadUsers();
-    }
-
-    nextPage = () => {
-        this.loadUsers(this.state.page + 1);
-        this.setState({
-            page: this.state.page + 1
-        });
-    };
-
-    prevPage = () => {
-        this.loadUsers(this.state.page - 1);
-        this.setState({
-            page: this.state.page - 1
-        });
-    };
+export default class UsersList extends Component {
 
     render() {
         return (
@@ -100,7 +48,7 @@ export class IndexPage extends Component {
                                             <Table.Cell>{user.name}</Table.Cell>
                                             <Table.Cell>{user.surname}</Table.Cell>
                                             <Table.Cell>{user.email}</Table.Cell>
-                                            <Table.Cell><EditUser updateFunc={this.loadUsers} user={this.state.users[index]}/></Table.Cell>
+                                            <Table.Cell><EditUser user={user}/></Table.Cell>
                                         </Table.Row>
                                     })
                                 }
@@ -132,46 +80,4 @@ export class IndexPage extends Component {
         );
     }
 
-    __getCurrentPage = () => {
-        let link = window.location.href.split('?');
-        if (link.length > 1){
-            let params = link[1].split('=');
-            if (params.length > 1){
-                this.setState({
-                    page: params[1]
-                });
-            }
-            console.log(params[1])
-        }
-    }
-
 }
-
-
-const mapStateToProps = state => {
-    return {
-        users: state.userReducer
-    };
-};
-
-const mapDispatchToProps = dispatch => {
-    return ({
-        sortDesc: (payload) => {
-            dispatch({
-                type: SORT_DESC, payload
-            })
-        },
-        sortAsc: (payload) => {
-            dispatch({
-                type: SORT_ASC, payload
-            })
-        },
-        setUsers: (payload) => {
-            dispatch({
-                type: SET_USERS, payload
-            })
-        }
-    });
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(IndexPage);
