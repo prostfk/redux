@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Icon, Label, Menu, Table} from 'semantic-ui-react'
+import {Button, Icon, Menu, Table} from 'semantic-ui-react'
 import {Link} from "react-router-dom";
 import EditUser from "./indexPage";
 import CreateUser from "./createUser";

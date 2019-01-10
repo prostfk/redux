@@ -1,20 +1,12 @@
 import React, {Component} from 'react';
-import {LOAD_USERS, SEARCH, SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
+import {SET_USERS} from "../constants/userActionTypes";
 import connect from "react-redux/es/connect/connect";
 import {
     Button,
-    Checkbox,
     Container,
     Form,
     Icon,
-    Input,
-    Radio,
-    Select,
-    Table,
-    TextArea,
-    Label,
-    Menu
-} from 'semantic-ui-react'
+    Table} from 'semantic-ui-react'
 import {NotificationManager} from "react-notifications";
 import {Link} from "react-router-dom";
 
@@ -48,7 +40,7 @@ class SearchPage extends Component {
 
     addParameter = () => {
         let exists = false;
-        this.state.searchParams.map((value, index) => {
+        this.state.searchParams.forEach((value) => {
             let key = Object.keys(value)[0];
             if (key === this.state.parameter || this.state.parameter.length === 0 || this.state.value.length === 0) {
                 console.log(value.parameter, this.state.parameter);

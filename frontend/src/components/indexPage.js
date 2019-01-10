@@ -1,13 +1,13 @@
 // @flow
 import React, {Component} from 'react';
 import connect from "react-redux/es/connect/connect";
-import {LOAD_USERS, SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
-import {Button, Icon, Label, Menu, Table} from 'semantic-ui-react'
+import {SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
+import {Button, Icon, Menu, Table} from 'semantic-ui-react'
 import {Link} from "react-router-dom";
 import LoadingBar from "./loadingBar";
 import CreateUser from "./createUser";
 import EditUser from "./editUser";
-import { withRouter } from "react-router-dom";
+// import { withRouter } from "react-router-dom";
 
 export class IndexPage extends Component {
 
@@ -100,11 +100,15 @@ export class IndexPage extends Component {
                                 {
                                     this.state.users.map((user, index) => {
                                         return <Table.Row className={'animated fadeIn'} key={index}>
-                                            <Table.Cell><Link style={{'text-decoration': 'none'}} to={`/user/${user.id}`}>{user.id}</Link></Table.Cell>
+                                            <Table.Cell><Link style={{'textDecoration': 'none'}} to={`/user/${user.id}`}>{user.id}</Link></Table.Cell>
                                             <Table.Cell>{user.name}</Table.Cell>
                                             <Table.Cell>{user.surname}</Table.Cell>
                                             <Table.Cell>{user.email}</Table.Cell>
-                                            <Table.Cell><EditUser updateFunc={this.loadUsers} user={this.state.users[index]}/></Table.Cell>
+                                            <Table.Cell><EditUser updateFunc={this.loadUsers} user={user} phone={{
+                                                id: user.phoneId,
+                                                number: user.number,
+                                                type: user.type
+                                            }}/></Table.Cell>
                                         </Table.Row>
                                     })
                                 }

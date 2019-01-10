@@ -59,7 +59,6 @@ export default class CreateUser extends Component {
     };
 
     render() {
-        let whiteColor = {color: 'white'};
         return (
             <Modal
                 trigger={<Button onClick={this.handleOpen}>Add user</Button>}

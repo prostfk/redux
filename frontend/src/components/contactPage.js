@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FIND_BY_ID, SET_USER,} from "../constants/userActionTypes";
+import {SET_USER,} from "../constants/userActionTypes";
 import connect from "react-redux/es/connect/connect";
 import {Container, Card, Icon} from "semantic-ui-react";
 import {NotificationManager} from "react-notifications";

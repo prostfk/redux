@@ -15,7 +15,7 @@ export default (state = [], action) => {
             let parameters = action.payload;
             let array = usersArray.splice(0);
             let search = [];
-            parameters.map((value, index) => {
+            parameters.forEach((value) => {
                 for (let i = 0; i < array.length; i++) {
                     if (array[i][value.parameter].toString() === (value.value)) {
                         search.push(array[i]);

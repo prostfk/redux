@@ -11,17 +11,25 @@ export default class EditUser extends Component {
             id: this.props.user.id,
             name: this.props.user.name,
             surname: this.props.user.surname,
-            email: this.props.user.email
+            email: this.props.user.email,
+            phoneId: this.props.phone.id,
+            phoneVisible: !!this.props.phone.id,
+            phoneNumber: this.props.phone.number ? this.props.phone.number : '',
+            phoneType: this.props.phone.type ? this.props.phone.type : 'mobile'
         };
     }
 
     componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
-        if (nextProps !== this.props){
+        if (nextProps !== this.props) {
             this.setState({
                 id: nextProps.user.id,
                 name: nextProps.user.name,
                 surname: nextProps.user.surname,
-                email: nextProps.user.email
+                email: nextProps.user.email,
+                phoneId: nextProps.phone.id,
+                phoneVisible: !!nextProps.phone.id,
+                phoneNumber: nextProps.phone.number ? nextProps.phone.number : '',
+                phoneType: nextProps.phone.type ? nextProps.phone.type : 'mobile'
             })
         }
 
@@ -44,6 +52,14 @@ export default class EditUser extends Component {
             formData.append('email', this.state.email);
             formData.append('name', this.state.name);
             formData.append('surname', this.state.surname);
+            if (this.state.phoneVisible) {
+                console.log(this.props.phoneId);
+                if (this.state.phoneId !== null){
+                    formData.append('phoneId', this.props.phone.id);
+                }
+                formData.append('number', this.state.phoneNumber);
+                formData.append('type', this.state.phoneType);
+            }
             fetch('/api/updateContact', {method: 'put', body: formData}).then(resp => resp.json())
                 .then(data => {
                     if (data.error) {
@@ -52,9 +68,6 @@ export default class EditUser extends Component {
                         this.props.updateFunc();
                         this.setState({
                             modalOpen: false,
-                            name: '',
-                            surname: '',
-                            email: ''
                         });
                         NotificationManager.success(`User ${this.state.name} was updated!`);
                     }
@@ -79,6 +92,26 @@ export default class EditUser extends Component {
                             <Form.Input fluid id={'email'} onChange={this.handleChange} value={this.state.email}
                                         label='Email' placeholder='Email'/>
                         </Form.Group>
+                        <Button onClick={() => this.setState({phoneVisible: !this.state.phoneVisible})} inverted>
+                            <Icon name='phone'/> Phone ?
+                        </Button>
+
+
+                        {
+                            this.state.phoneVisible ?
+                                <Form.Group widths='equal' style={{marginTop: '2%'}}>
+                                    <Form.Input type={'phone'} fluid id={'phoneNumber'} onChange={this.handleChange}
+                                                value={this.state.phoneNumber}
+                                                placeholder='Phone number'/>
+                                    <select value={this.state.phoneType} className="ui fluid dropdown"
+                                            onChange={this.changeInput}
+                                            id={'phoneType'}>
+                                        <option value="mobile">Mobile</option>
+                                        <option value="work">Work</option>
+                                    </select>
+                                </Form.Group> : <></>
+
+                        }
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
@@ -103,6 +136,13 @@ export default class EditUser extends Component {
         } else if (!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
             NotificationManager.warning('Incorrect email!');
             return false;
+        } else if (this.state.phoneVisible) {
+            if (!/^((\+[1-9])+([0-9]){10,12})$/.test(this.state.phoneNumber)) {
+                NotificationManager.warning('Incorrect phone format');
+                return false;
+            } else {
+                return true;
+            }
         } else {
             return true;
         }
