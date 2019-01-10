@@ -1,6 +1,8 @@
-    const Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
 const db = require('../sequelize/db');
-const UserModel = db.define('user', {
+const User = require('./user.model');
+
+const Phone = db.define('phone',{
     id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -8,21 +10,21 @@ const UserModel = db.define('user', {
         autoIncrement: true,
         primaryKey: true
     },
-    email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            isEmail: true
-        }
-    },
-    name: {
+    number: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    surname: {
+    type: {
         type: Sequelize.STRING,
+        allowNull: false
+    },
+    user_id:{
+        type: Sequelize.INTEGER,
         allowNull: false
     }
+}, {
+    timestamps: false
 });
+Phone.belongsTo(User, {foreignKey: 'id', target: 'user_id'});
 
-module.exports = UserModel;
+module.exports = Phone;

@@ -7,6 +7,7 @@ import {Link} from "react-router-dom";
 import LoadingBar from "./loadingBar";
 import CreateUser from "./createUser";
 import EditUser from "./editUser";
+import { withRouter } from "react-router-dom";
 
 export class IndexPage extends Component {
 
@@ -35,14 +36,15 @@ export class IndexPage extends Component {
 
     loadUsers = (pageNumber = this.state.page) => {
         fetch(`/api/contacts?page=${pageNumber - 1}`).then(resp=>resp.json()).then(data=>this.props.setUsers(data));
-        this.__getCurrentPage();
+
         this.setState({
             users: this.props.users
         });
     };
 
     componentDidMount() {
-        this.loadUsers();
+        this.__getCurrentPage();
+
     }
 
     nextPage = () => {
@@ -50,6 +52,7 @@ export class IndexPage extends Component {
         this.setState({
             page: this.state.page + 1
         });
+        this.props.history.push(`/?page=${this.state.page+1}`);
     };
 
     prevPage = () => {
@@ -57,6 +60,7 @@ export class IndexPage extends Component {
         this.setState({
             page: this.state.page - 1
         });
+        this.props.history.push(`/?page=${this.state.page-1}`);
     };
 
     render() {
@@ -140,8 +144,12 @@ export class IndexPage extends Component {
                 this.setState({
                     page: params[1]
                 });
+                this.loadUsers(params[1]);
+            }else {
+                this.loadUsers();
             }
-            console.log(params[1])
+        }else{
+            this.loadUsers();
         }
     }
 

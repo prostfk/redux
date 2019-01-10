@@ -3,6 +3,7 @@ const router = express.Router();
 const security = require('../util/security');
 const jwt = require('jwt-simple');
 const User = require('../model/user.model');
+const Phone = require('../model/phone.modal');
 const Op = require('../sequelize/db').Op;
 const url = require('url');
 
@@ -47,16 +48,27 @@ router.get('/search', (req, resp) => {
 });
 
 router.put('/addContact', (req, resp) => {
-    let {name, surname, email} = req.body;
+    let {name, surname, email, number, type} = req.body;
+    let response = {};
     User.create({
         email,
         name,
         surname
-    }).then(instance => instance.save(() => instance.reload().then(() => {
-        console.log(instance);
-        resp.json(instance);
-    })));
-    resp.json({status: 'ok'})
+    }).then(instance => {
+        response.user = instance.dataValues;
+        let id = instance.dataValues.id;
+        if (number){
+            Phone.create({
+                number,
+                type,
+                user_id: id
+            }).then(newPhone=>{
+                response.phone = newPhone.dataValues;
+            })
+        }
+    });
+    resp.json({response});
+
 });
 
 router.put('/updateContact', (req, resp) => {
@@ -71,6 +83,14 @@ router.put('/updateContact', (req, resp) => {
     } else {
         resp.json({error: 'no id attr'});
     }
+});
+
+router.get('/phone/:id', (req,resp)=>{
+    Phone.find({
+        where: {
+            id: req.params.id
+        }, include: [User]
+    }).then(data=>resp.json(data)).catch(err=>resp.json(err.toString()));
 });
 
 module.exports = router;

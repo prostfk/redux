@@ -34,3 +34,7 @@
 a {
   color: black;
 }
+
+.white-label label{
+  color: white;
+}
