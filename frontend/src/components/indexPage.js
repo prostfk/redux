@@ -5,6 +5,7 @@ import {LOAD_USERS, SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActio
 import {Icon, Label, Menu, Table} from 'semantic-ui-react'
 import {Link} from "react-router-dom";
 import UsersArray from '../data/usersArray'
+import LoadingBar from "./loadingBar";
 
 export class IndexPage extends Component {
 
@@ -32,8 +33,8 @@ export class IndexPage extends Component {
     }
 
     componentDidMount() {
-        this.props.setUsers(UsersArray);
-        console.log(this.props.users);
+        fetch(`/api/contacts?page=${this.state.page - 1}`).then(resp=>resp.json()).then(data=>this.props.setUsers(data));
+        this.__getCurrectPage();
         this.setState({
             users: this.props.users
         });
@@ -57,7 +58,7 @@ export class IndexPage extends Component {
             <>
                 {
                     this.state.users.length > 0 ?
-                        <Table celled>
+                        <Table celled className={'animated fadeIn'}>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>Id
@@ -70,11 +71,11 @@ export class IndexPage extends Component {
                                         <Icon name='sort alphabet up'
                                               onClick={this.props.sortDesc.bind(this, 'name')}/>
                                     </Table.HeaderCell>
-                                    <Table.HeaderCell>Username
+                                    <Table.HeaderCell>Surname
                                         <Icon name='sort alphabet down'
-                                              onClick={this.props.sortAsc.bind(this, 'username')}/>
+                                              onClick={this.props.sortAsc.bind(this, 'surname')}/>
                                         <Icon name='sort alphabet up'
-                                              onClick={this.props.sortDesc.bind(this, 'username')}/>
+                                              onClick={this.props.sortDesc.bind(this, 'surname')}/>
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>Email
                                         <Icon name='sort alphabet down'
@@ -90,7 +91,7 @@ export class IndexPage extends Component {
                                         return <Table.Row key={index}>
                                             <Table.Cell><Link stule={{'text-decoration': 'none'}} to={`/user/${user.id}`}>{user.id}</Link></Table.Cell>
                                             <Table.Cell>{user.name}</Table.Cell>
-                                            <Table.Cell>{user.username}</Table.Cell>
+                                            <Table.Cell>{user.surname}</Table.Cell>
                                             <Table.Cell>{user.email}</Table.Cell>
                                         </Table.Row>
                                     })
@@ -117,11 +118,24 @@ export class IndexPage extends Component {
                                     </Table.HeaderCell>
                                 </Table.Row>
                             </Table.Footer>
-                        </Table> : <div/>
+                        </Table> : <LoadingBar header={'One moment'} text={'Loading users'}/>
                 }
 
             </>
         );
+    }
+
+    __getCurrectPage = () => {
+        let link = window.location.href.split('?');
+        if (link.length > 1){
+            let params = link[1].split('=');
+            if (params.length > 1){
+                this.setState({
+                    page: params[1]
+                });
+            }
+            console.log(params[1])
+        }
     }
 
 }

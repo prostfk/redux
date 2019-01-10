@@ -12,6 +12,7 @@ import NavBar from "./components/navbar";
 import Notification from './components/notifications'
 import SearchPage from "./components/search";
 import ContactPage from "./components/contactPage";
+import './css/animate.css'
 
 class App extends Component {
     render() {

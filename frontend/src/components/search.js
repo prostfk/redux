@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {LOAD_USERS, SEARCH, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
+import {LOAD_USERS, SEARCH, SET_USERS, SORT_ASC, SORT_DESC} from "../constants/userActionTypes";
 import connect from "react-redux/es/connect/connect";
 import {
     Button,
@@ -55,8 +55,10 @@ class SearchPage extends Component {
             }
         });
         if (!is) {
+            let obj = {};
+            obj[this.state.parameter] = this.state.value;
             this.setState({
-                searchParams: [...this.state.searchParams, {parameter: this.state.parameter, value: this.state.value}]
+                searchParams: [...this.state.searchParams, obj]
             })
         }
     };
@@ -72,7 +74,11 @@ class SearchPage extends Component {
     };
 
     searchUsers = () => {
-
+        let formData = new FormData();
+        formData.append('info', JSON.stringify(this.state.searchParams));
+        console.log(JSON.stringify(this.state.searchParams));
+        fetch(`/api/search?info=${JSON.stringify(this.state.searchParams)}`).then(resp=>resp.json())
+            .then(data=>this.props.setUsers(data)).catch(err=>NotificationManager.error(err.toString()));
     };
 
     render() {
@@ -98,7 +104,7 @@ class SearchPage extends Component {
                                             </Table.HeaderCell>
                                             <Table.HeaderCell>Name
                                             </Table.HeaderCell>
-                                            <Table.HeaderCell>Username
+                                            <Table.HeaderCell>Surname
                                             </Table.HeaderCell>
                                             <Table.HeaderCell>Email
                                             </Table.HeaderCell>
@@ -110,7 +116,7 @@ class SearchPage extends Component {
                                                 return <Table.Row key={index}>
                                                     <Table.Cell>{user.id}</Table.Cell>
                                                     <Table.Cell>{user.name}</Table.Cell>
-                                                    <Table.Cell>{user.username}</Table.Cell>
+                                                    <Table.Cell>{user.surname}</Table.Cell>
                                                     <Table.Cell>{user.email}</Table.Cell>
                                                 </Table.Row>
                                             })
@@ -137,7 +143,7 @@ class SearchPage extends Component {
                         </select>
                         <Button type='button' onClick={this.addParameter}>Add field</Button>
                         <Button type='button'
-                                onClick={this.props.searchUsers.bind(this, this.state.searchParams)}>Search</Button>
+                                onClick={this.searchUsers}>Search</Button>
                     </Form>
                     {
                         this.state.searchParams.length > 0 ?
@@ -155,8 +161,8 @@ class SearchPage extends Component {
 
                                         this.state.searchParams.map((value, index) => {
                                             return <Table.Row key={index}>
-                                                <Table.Cell>{value.parameter}</Table.Cell>
-                                                <Table.Cell>{value.value}</Table.Cell>
+                                                <Table.Cell>{Object.keys(value)[0]}</Table.Cell>
+                                                <Table.Cell>{value[Object.keys(value)[0]]}</Table.Cell>
                                                 <Table.Cell><Icon name={'delete'}
                                                                   onClick={this.deleteParam.bind(this, index)}/></Table.Cell>
                                             </Table.Row>
@@ -195,9 +201,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return ({
-        searchUsers: (payload) => {
+        setUsers: (payload) => {
             dispatch({
-                type: SEARCH, payload
+                type: SET_USERS, payload
             })
         }
     });

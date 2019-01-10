@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FIND_BY_ID,} from "../constants/userActionTypes";
+import {FIND_BY_ID, SET_USER,} from "../constants/userActionTypes";
 import connect from "react-redux/es/connect/connect";
 import {Container, Card, Icon} from "semantic-ui-react";
 import {NotificationManager} from "react-notifications";
@@ -13,7 +13,7 @@ export class ContactPage extends Component {
         if (!/^-?[\d.]+(?:e-?\d+)?$/.test(id)) {
             NotificationManager.error('Incorrect link');
         } else {
-            this.props.findUserById(id);
+            fetch(`/api/contact/${id}`).then(resp => resp.json()).then(data=>this.props.setUser(data));
         }
     }
 
@@ -51,9 +51,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return ({
-        findUserById: (payload) => {
+        setUser: (payload) => {
             dispatch({
-                type: FIND_BY_ID, payload
+                type: SET_USER, payload
             })
         }
     });
